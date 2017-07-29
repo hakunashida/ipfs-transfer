@@ -1,1 +1,1 @@
-web: ipfs-transfer
+worker: ipfs-transfer
