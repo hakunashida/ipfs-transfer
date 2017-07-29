@@ -17,6 +17,8 @@ import (
 	// "github.com/djimenez/iconv-go"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/PuerkitoBio/fetchbot"
+	"goji.io"
+	"goji.io/pat"
 )
 
 func ExampleScrape() {
@@ -76,9 +78,18 @@ var (
 )
 
 func main() {
+
+	// 1. bind to port
+	gojiMux := goji.NewMux()
+	gojiMux.HandleFunc(pat.Get("/hello/:name"), hello)
+	http.ListenAndServe("localhost:8000", gojiMux)
+
+	// 2. run scrape example
 	// ExampleScrape()
+
 	flag.Parse()
 
+	// 3. start crawling
 	// Parse the provided seed
 	u, err := url.Parse(*seed)
 	if err != nil {
@@ -167,6 +178,11 @@ func main() {
 		fmt.Printf("[ERR] GET %s - %s\n", *seed, err)
 	}
 	q.Block()
+}
+
+func hello(w http.ResponseWriter, r *http.Request) {
+	name := pat.Param(r, "name")
+	fmt.Fprintf(w, "Hello, %s!", name)
 }
 
 func runMemStats(f *fetchbot.Fetcher, tick time.Duration) {
