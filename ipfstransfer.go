@@ -55,6 +55,7 @@ func ExampleScrape() {
 
 func main() {
 
+	connectDb()
 	beginFetching()
 
 	fmt.Println("ipfs-transfer started")
