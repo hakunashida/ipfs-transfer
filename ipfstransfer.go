@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -67,8 +66,6 @@ func main() {
 
 	// 2. run scrape example
 	// ExampleScrape()
-
-	flag.Parse()
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
