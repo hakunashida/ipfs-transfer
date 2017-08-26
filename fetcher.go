@@ -34,7 +34,7 @@ var (
 
 func beginFetching() {
 	
-	fmt.Print("begin fetching")
+	fmt.Println("begin fetching")
 
 	// Parse the string defined in the configuration
 	parsedUrl, err := url.Parse(*seed)
@@ -124,7 +124,7 @@ func beginFetching() {
 	if err != nil {
 		fmt.Printf("[ERR] GET %s - %s\n", *seed, err)
 	}
-	q.Block()
+	// q.Block()
 }
 
 func runMemStats(f *fetchbot.Fetcher, tick time.Duration) {
@@ -184,31 +184,27 @@ func logHandler(wrapped fetchbot.Handler) fetchbot.Handler {
 func enqueueLinks(ctx *fetchbot.Context, doc *goquery.Document) {
 	mu.Lock()
 	doc.Find("a[href]").Each(func(i int, s *goquery.Selection) {
+
 		val, _ := s.Attr("href")
+
 		// Resolve address
-		u, err := ctx.Cmd.URL().Parse(val)
+		parsedUrl, err := ctx.Cmd.URL().Parse(val)
 		if err != nil {
 			fmt.Printf("error: resolve URL %s - %s\n", val, err)
 			return
 		}
+
+		// Only follow links that pass the regex test
 		re := regexp.MustCompile(`(\.com\/)+([a-z]?|(0-9)?|bands|tabs|tab)\/`)
-		// matched, err := regexp.MatchString(re, u.String());
-		if re.FindStringIndex(u.String()) == nil {
+		if re.FindStringIndex(parsedUrl.String()) == nil {
 			return
 		}
-		/*if err != nil {
-			fmt.Printf("error: regex match url %s - %s\n", u, err)
-			return
-		}*/
-		// only follow links that match the regex condition
-		/*if !matched {
-			return;
-		}*/
-		if !dup[u.String()] {
-			if _, err := ctx.Q.SendStringHead(u.String()); err != nil {
-				fmt.Printf("error: enqueue head %s - %s\n", u, err)
+		
+		if !dup[parsedUrl.String()] {
+			if _, err := ctx.Q.SendStringGet(parsedUrl.String()); err != nil {
+				fmt.Printf("error: enqueue head %s - %s\n", parsedUrl, err)
 			} else {
-				dup[u.String()] = true
+				dup[parsedUrl.String()] = true
 			}
 		}
 	})
