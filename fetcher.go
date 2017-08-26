@@ -34,6 +34,8 @@ var (
 
 func beginFetching() {
 	
+	flag.Parse()
+	
 	fmt.Println("begin fetching")
 
 	// Parse the string defined in the configuration
@@ -55,12 +57,15 @@ func beginFetching() {
 	mux.Response().Method("GET").ContentType("text/html").Handler(fetchbot.HandlerFunc(
 		func(ctx *fetchbot.Context, res *http.Response, err error) {
 			// Process the body to find the links
-			// TODO: Move this to a separate file
 			doc, err := goquery.NewDocumentFromResponse(res)
 			if err != nil {
 				fmt.Printf("[ERR] %s %s - %s\n", ctx.Cmd.Method(), ctx.Cmd.URL(), err)
 				return
 			}
+
+			// Parse the tabs
+			parseTabPage(doc)
+
 			// Enqueue all links as HEAD requests
 			enqueueLinks(ctx, doc)
 		}))
