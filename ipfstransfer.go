@@ -54,26 +54,11 @@ func ExampleScrape() {
 	})
 }
 
-/*var (
-	// Protect access to dup
-	mu sync.Mutex
-	// Duplicates table
-	dup = map[string]bool{}
-
-	// Command-line flags
-	seed        = flag.String("seed", "https://ultimate-guitar.com", "seed URL")
-	cancelAfter = flag.Duration("cancelafter", 0, "automatically cancel the fetchbot after a given time")
-	cancelAtURL = flag.String("cancelat", "", "automatically cancel the fetchbot at a given URL")
-	stopAfter   = flag.Duration("stopafter", 0, "automatically stop the fetchbot after a given time")
-	stopAtURL   = flag.String("stopat", "", "automatically stop the fetchbot at a given URL")
-	memStats    = flag.Duration("memstats", 0, "display memory statistics at a given interval")
-)*/
-
 func main() {
 
 	beginFetching()
 
-	fmt.Printf("ipfs-transfer started")
+	fmt.Println("ipfs-transfer started")
 
 	// 1. bind to port
 	gojiMux := goji.NewMux()
