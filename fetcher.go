@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"regexp"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -122,4 +125,109 @@ func beginFetching() {
 		fmt.Printf("[ERR] GET %s - %s\n", *seed, err)
 	}
 	q.Block()
+}
+
+func runMemStats(f *fetchbot.Fetcher, tick time.Duration) {
+	var mu sync.Mutex
+	var di *fetchbot.DebugInfo
+
+	// Start goroutine to collect fetchbot debug info
+	go func() {
+		for v := range f.Debug() {
+			mu.Lock()
+			di = v
+			mu.Unlock()
+		}
+	}()
+	// Start ticker goroutine to print mem stats at regular intervals
+	go func() {
+		c := time.Tick(tick)
+		for _ = range c {
+			mu.Lock()
+			printMemStats(di)
+			mu.Unlock()
+		}
+	}()
+}
+
+// stopHandler stops the fetcher if the stopurl is reached. Otherwise it dispatches
+// the call to the wrapped Handler.
+func stopHandler(stopurl string, cancel bool, wrapped fetchbot.Handler) fetchbot.Handler {
+	return fetchbot.HandlerFunc(func(ctx *fetchbot.Context, res *http.Response, err error) {
+		if ctx.Cmd.URL().String() == stopurl {
+			fmt.Printf(">>>>> STOP URL %s\n", ctx.Cmd.URL())
+			// generally not a good idea to stop/block from a handler goroutine
+			// so do it in a separate goroutine
+			go func() {
+				if cancel {
+					ctx.Q.Cancel()
+				} else {
+					ctx.Q.Close()
+				}
+			}()
+			return
+		}
+		wrapped.Handle(ctx, res, err)
+	})
+}
+
+// logHandler prints the fetch information and dispatches the call to the wrapped Handler.
+func logHandler(wrapped fetchbot.Handler) fetchbot.Handler {
+	return fetchbot.HandlerFunc(func(ctx *fetchbot.Context, res *http.Response, err error) {
+		if err == nil {
+			fmt.Printf("[%d] %s %s - %s\n", res.StatusCode, ctx.Cmd.Method(), ctx.Cmd.URL(), res.Header.Get("Content-Type"))
+		}
+		wrapped.Handle(ctx, res, err)
+	})
+}
+
+func enqueueLinks(ctx *fetchbot.Context, doc *goquery.Document) {
+	mu.Lock()
+	doc.Find("a[href]").Each(func(i int, s *goquery.Selection) {
+		val, _ := s.Attr("href")
+		// Resolve address
+		u, err := ctx.Cmd.URL().Parse(val)
+		if err != nil {
+			fmt.Printf("error: resolve URL %s - %s\n", val, err)
+			return
+		}
+		re := regexp.MustCompile(`(\.com\/)+([a-z]?|(0-9)?|bands|tabs|tab)\/`)
+		// matched, err := regexp.MatchString(re, u.String());
+		if re.FindStringIndex(u.String()) == nil {
+			return
+		}
+		/*if err != nil {
+			fmt.Printf("error: regex match url %s - %s\n", u, err)
+			return
+		}*/
+		// only follow links that match the regex condition
+		/*if !matched {
+			return;
+		}*/
+		if !dup[u.String()] {
+			if _, err := ctx.Q.SendStringHead(u.String()); err != nil {
+				fmt.Printf("error: enqueue head %s - %s\n", u, err)
+			} else {
+				dup[u.String()] = true
+			}
+		}
+	})
+	mu.Unlock()
+}
+
+func printMemStats(di *fetchbot.DebugInfo) {
+	var mem runtime.MemStats
+	runtime.ReadMemStats(&mem)
+	buf := bytes.NewBuffer(nil)
+	buf.WriteString(strings.Repeat("=", 72) + "\n")
+	buf.WriteString("Memory Profile:\n")
+	buf.WriteString(fmt.Sprintf("\tAlloc: %d Kb\n", mem.Alloc/1024))
+	buf.WriteString(fmt.Sprintf("\tTotalAlloc: %d Kb\n", mem.TotalAlloc/1024))
+	buf.WriteString(fmt.Sprintf("\tNumGC: %d\n", mem.NumGC))
+	buf.WriteString(fmt.Sprintf("\tGoroutines: %d\n", runtime.NumGoroutine()))
+	if di != nil {
+		buf.WriteString(fmt.Sprintf("\tNumHosts: %d\n", di.NumHosts))
+	}
+	buf.WriteString(strings.Repeat("=", 72))
+	fmt.Println(buf.String())
 }
