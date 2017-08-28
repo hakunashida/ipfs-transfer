@@ -65,6 +65,8 @@ func main() {
 	gojiMux.HandleFunc(pat.Get("/hello/:name"), hello)
 	http.ListenAndServe("localhost:8000", gojiMux)
 
+	defer disconnectDb()
+
 	// 2. run scrape example
 	// ExampleScrape()
 }
