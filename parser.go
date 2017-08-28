@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -17,7 +17,7 @@ func parseTabPage(doc *goquery.Document) {
 		addReference(title, artist, doc.Url.String(), 0, 0)
 	}
 
-	fmt.Println(title)
-	fmt.Println(artist)
-	fmt.Println(tabContent)
+	// fmt.Println(title)
+	// fmt.Println(artist)
+	// fmt.Println(tabContent)
 }

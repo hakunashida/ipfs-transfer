@@ -5,15 +5,16 @@ import (
 	"log"
 
 	"gopkg.in/mgo.v2"
-    // "gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2/bson"
 )
 
 type TabReference struct {
-    Name string
-    Artist string
-    Url string
-    PageViews int
-    Rating float64
+	Id 			bson.ObjectId 	`json:"_id" bson:"_id,omitempty"`
+    Name 		string			`json:"name" bson:"name"`
+    Artist 		string			`json:"artist" bson:"artist"`
+    Url 		string			`json:"url" bson:"url"`
+    PageViews 	int 			`json:"page_views" bson:"page_views"`
+    Rating 		float64 		`json:"rating" bson:"rating"`
 }
 
 const (
@@ -24,6 +25,7 @@ const (
 
 var (
     Database *mgo.Database
+    Collection *mgo.Collection
 )
 
 func connectDb() {
@@ -37,23 +39,39 @@ func connectDb() {
 
     session.SetMode(mgo.Monotonic, true)
 	Database = session.DB(dbName)
+	Collection = Database.C(collectionName)
+
+	// print all results
+	/*var results []TabReference
+	err = Collection.Find(nil).All(&results)
+	if err != nil {
+	    panic(err)
+	}
+	fmt.Println("Results All: ", results)*/
 }
 
 func disconnectDb() {
 	Database.Session.Close()
 }
 
-func collection() *mgo.Collection {
-	return Database.C(collectionName).With( Database.Session.Copy() )
-}
-
-
 func clearDb() {
-	collection().RemoveAll(nil)
+	Collection.RemoveAll(nil)
 }
 
 func addReference(name string, artist string, url string, pageViews int, rating float64) {
-	err := collection().Insert(&TabReference{name, artist, url, pageViews, rating})
+
+	tabReference := &TabReference{
+		Id: bson.NewObjectId(),
+		Name: name,
+		Artist: artist,
+		Url: url,
+		PageViews: pageViews,
+		Rating: rating,
+	}
+
+	fmt.Println(tabReference)
+
+	err := Collection.Insert(tabReference)
 	if err != nil {
 		log.Fatal(err)
 	} else {
