@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	// "context"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -11,11 +10,11 @@ import (
 )
 
 type TabReference struct {
-    Name 		string			`json:"name" bson:"name"`
-    Artist 		string			`json:"artist" bson:"artist"`
-    Url 		string			`json:"url" bson:"url"`
-    PageViews 	int 			`json:"page_views" bson:"page_views"`
-    Rating 		float64 		`json:"rating" bson:"rating"`
+    Name 		string	`json:"name" bson:"name"`
+    Artist 		string	`json:"artist" bson:"artist"`
+    Url 		string	`json:"url" bson:"url"`
+    PageViews 	int 	`json:"page_views" bson:"page_views"`
+    Rating 		float64	`json:"rating" bson:"rating"`
 }
 
 const (
@@ -34,9 +33,6 @@ func connectDb() {
 
 	fmt.Println("database connection opened")
 
-	/*
-	*	Set up mongo
-	**/
 	session, err := mgo.Dial("localhost:27017")
     if err != nil {
         panic(err)
@@ -49,22 +45,11 @@ func connectDb() {
 	// clearDb()
 	printDb()
 
-	/*
-	*	Set up elastic
-	**/
-
-	// Create a client
-	Client, err = elastic.NewClient()
+	// set up search indexes
+	err = Collection.EnsureIndexKey("name", "artist")
 	if err != nil {
 		panic(err)
 	}
-
-	// Create an index
-	/*_, err = Client.CreateIndex("tabs").Do(context.Background())
-	if err != nil {
-		// Handle error
-		panic(err)
-	}*/
 }
 
 func disconnectDb() {
@@ -85,6 +70,19 @@ func clearDb() {
 	Collection.RemoveAll(nil)
 }
 
+func searchDb(terms string) []TabReference {
+
+	var tabReferences []TabReference
+	query := bson.M{"$text": bson.M{"$search": terms}}
+	err := Collection.Find(query).All(&tabReferences)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("RunQuery : %d : Count[%d]\n", query, len(tabReferences))
+	return tabReferences
+}
+
 func addReference(name string, artist string, url string, pageViews int, rating float64) {
 
 	// Use the url as a unique identifier to determine if a new record should be inserted
@@ -93,14 +91,13 @@ func addReference(name string, artist string, url string, pageViews int, rating 
 	    panic(err)
 	}
 	
-	// Don't insert if the record already exists
 	if (resultsCount > 0) {
+
+		// Don't insert if the record already exists
 		fmt.Println("Skipping " + url + " because it has already been added")
-	} 
+	} else {
 
-	// Otherwise, insert a new record
-	else {
-
+		// Otherwise, insert a new record
 		tabReference := &TabReference{
 			Name: name,
 			Artist: artist,
@@ -117,33 +114,4 @@ func addReference(name string, artist string, url string, pageViews int, rating 
 			fmt.Printf("Successfully added %s", url)
 		}
 	}
-
-
-	// Add a document to the index
-	/*_, err = Client.Index().
-		Index("tabs").
-		Type("tabReference").
-		BodyJson(tabReference).
-		Refresh("true").
-		Do(context.Background())
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-
-	// Search with a term query
-	termQuery := elastic.NewTermQuery("name", "my")
-	searchResult, err := Client.Search().
-	    Index("tabs").   // search in index "twitter"
-	    Query(termQuery).   // specify the query
-	    Sort("name", true). // sort by "user" field, ascending
-	    // From(0).Size(10).   // take documents 0-9
-	    Pretty(true).       // pretty print request and response JSON
-	    Do(context.Background())             // execute
-	if err != nil {
-	    // Handle error
-	    panic(err)
-	}
-
-	fmt.Println(searchResult)*/
 }
