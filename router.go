@@ -25,3 +25,5 @@ func NewRouter() *mux.Router {
 
 	return router
 }
+
+// thanks https://thenewstack.io/make-a-restful-json-api-go/
