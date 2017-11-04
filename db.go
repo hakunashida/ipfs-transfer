@@ -55,7 +55,6 @@ func printDb() []TabReference {
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println("All results: ", results)
 	return results
 }
 
@@ -76,7 +75,7 @@ func searchDb(terms string) []TabReference {
 	return tabReferences
 }
 
-func addReference(name string, artist string, url string, pageViews int, rating float64) {
+func addReference(name string, artist string, url string, ipfsHash string, pageViews int, rating float64) {
 
 	// Use the url as a unique identifier to determine if a new record should be inserted
 	resultsCount, err := Collection.Find(bson.M{"url": url}).Count()
@@ -97,6 +96,7 @@ func addReference(name string, artist string, url string, pageViews int, rating 
 			Url:       url,
 			PageViews: pageViews,
 			Rating:    rating,
+			IpfsHash:  ipfsHash,
 		}
 
 		err := Collection.Insert(tabReference)

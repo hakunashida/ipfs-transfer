@@ -9,6 +9,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Message struct {
+	Body string
+}
+
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
 }
@@ -39,13 +43,15 @@ func TabsSearch(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(results); err != nil {
 			panic(err)
 		}
-		return
 	}
 }
 
-/*func search(w http.ResponseWriter, r *http.Request) {
-	terms := pat.Param(r, "terms")
-	refs := searchDb(terms)
-	fmt.Fprintf(w, "Searching for: %s\n", terms)
-	fmt.Fprintf(w, "found:\n%s", refs)
-}*/
+func Reset(w http.ResponseWriter, r *http.Request) {
+	clearDb()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	res := Message{"Reset successful"}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		panic(err)
+	}
+}
