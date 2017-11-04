@@ -33,10 +33,10 @@ var (
 )
 
 func beginFetching() {
-	
+
 	flag.Parse()
-	
-	fmt.Println("begin fetching")
+
+	fmt.Println("2. Begin fetching")
 
 	// Parse the string defined in the configuration
 	parsedUrl, err := url.Parse(*seed)
@@ -52,8 +52,7 @@ func beginFetching() {
 		fmt.Printf("[ERR] %s %s - %s\n", ctx.Cmd.Method(), ctx.Cmd.URL(), err)
 	}))
 
-	// Handle GET requests for html responses, to parse the body and enqueue all links as HEAD
-	// requests.
+	// Handle GET requests for html responses, to parse the body and enqueue all links as HEAD requests
 	mux.Response().Method("GET").ContentType("text/html").Handler(fetchbot.HandlerFunc(
 		func(ctx *fetchbot.Context, res *http.Response, err error) {
 			// Process the body to find the links
@@ -204,7 +203,7 @@ func enqueueLinks(ctx *fetchbot.Context, doc *goquery.Document) {
 		if re.FindStringIndex(parsedUrl.String()) == nil {
 			return
 		}
-		
+
 		if !dup[parsedUrl.String()] {
 			if _, err := ctx.Q.SendStringGet(parsedUrl.String()); err != nil {
 				fmt.Printf("error: enqueue head %s - %s\n", parsedUrl, err)
