@@ -30,8 +30,14 @@ var routes = Routes{
 		"/tabs/search/{searchTerm}",
 		TabsSearch,
 	},
+	Route{
+		"TabContent",
+		"GET",
+		"/tabs/{id}/content",
+		TabContent,
+	},
 
-	// TODO: this route should of course be removed
+	// TODO: this route should of course be removed before pushing to production
 	Route{
 		"Reset",
 		"GET",

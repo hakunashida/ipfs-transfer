@@ -22,10 +22,6 @@ func parseTabPage(doc *goquery.Document) {
 			addReference(title, artist, url, hash, 0, 0)
 		}
 	}
-
-	// fmt.Println(title)
-	// fmt.Println(artist)
-	// fmt.Println(tabContent)
 }
 
 func saveContentToIpfs(contentStr string) string {
@@ -37,9 +33,6 @@ func saveContentToIpfs(contentStr string) string {
 		panic(err)
 	}
 
-	// save the file to IPFS
-	hash := ipfsSave(tmpfile.Name())
-
 	defer os.Remove(tmpfile.Name()) // clean up
 
 	if _, err := tmpfile.Write(content); err != nil {
@@ -48,6 +41,9 @@ func saveContentToIpfs(contentStr string) string {
 	if err := tmpfile.Close(); err != nil {
 		panic(err)
 	}
+
+	// save the file to IPFS
+	hash := ipfsSave(tmpfile.Name())
 
 	return hash
 }

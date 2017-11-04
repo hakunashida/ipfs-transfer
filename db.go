@@ -47,7 +47,7 @@ func disconnectDb() {
 	Database.Session.Close()
 }
 
-func printDb() []TabReference {
+func getAllTabs() []TabReference {
 
 	// print all database records
 	var results []TabReference
@@ -56,6 +56,15 @@ func printDb() []TabReference {
 		panic(err)
 	}
 	return results
+}
+
+func getTabById(id string) TabReference {
+	data := TabReference{}
+	err := Collection.FindId(bson.ObjectIdHex(id)).One(&data)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
 
 func clearDb() {
