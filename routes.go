@@ -24,4 +24,10 @@ var routes = Routes{
 		"/tabs",
 		TabsShow,
 	},
+	Route{
+		"TabsSearch",
+		"GET",
+		"/tabs/search/{searchTerm}",
+		TabsSearch,
+	},
 }

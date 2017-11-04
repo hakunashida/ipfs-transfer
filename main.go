@@ -8,10 +8,10 @@ import (
 
 func main() {
 
+	fmt.Println("Karibu :)")
+
 	connectDb()
 	// beginFetching()
-
-	fmt.Println("Karibu :)")
 
 	router := NewRouter()
 	log.Fatal(http.ListenAndServe(":8000", router))
