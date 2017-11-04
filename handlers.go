@@ -13,15 +13,20 @@ type Message struct {
 	Body string
 }
 
+type TabsResponse struct {
+	Data []TabReference `json:"data"`
+}
+
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
 }
 
 func TabsShow(w http.ResponseWriter, r *http.Request) {
-	tabs := printDb()
+	tabs := getAllTabs()
 	w.Header().Set("Content-Type", "application.json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(tabs); err != nil {
+	res := TabsResponse{tabs}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
 		panic(err)
 	}
 }
@@ -43,6 +48,34 @@ func TabsSearch(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(results); err != nil {
 			panic(err)
 		}
+	}
+}
+
+func TabContent(w http.ResponseWriter, r *http.Request) {
+
+	// find the tab from the id
+	vars := mux.Vars(r)
+	id := vars["id"]
+	tab := getTabById(id)
+
+	// set the response headers
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	// send back the tab content
+	if tab.IpfsHash != "" {
+		content := ipfsLoad(tab.IpfsHash)
+		res := Message{content}
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	// this should never happen, but in case no content is found...
+	res := Message{"No tab content was found with the id " + id}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		panic(err)
 	}
 }
 
