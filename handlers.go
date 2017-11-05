@@ -9,12 +9,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Message struct {
-	Body string
+type MessageResponse struct {
+	Body string `json:"message"`
 }
 
 type TabsResponse struct {
-	Data []TabReference `json:"data"`
+	Data []TabReference `json:"tabs"`
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -38,16 +38,20 @@ func TabsSearch(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	searchTerm := vars["searchTerm"]
+	searchResults := searchDb(searchTerm)
 
-	results := searchDb(searchTerm)
+	// return an empty array if the search does not find any matches
+	tabs := []TabReference{}
+	if len(searchResults) > 0 {
+		tabs = searchResults
+	}
+	res := TabsResponse{Data: tabs}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 
-	if len(results) > 0 {
-		if err := json.NewEncoder(w).Encode(results); err != nil {
-			panic(err)
-		}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		panic(err)
 	}
 }
 
@@ -65,7 +69,7 @@ func TabContent(w http.ResponseWriter, r *http.Request) {
 	// send back the tab content
 	if tab.IpfsHash != "" {
 		content := ipfsLoad(tab.IpfsHash)
-		res := Message{content}
+		res := MessageResponse{content}
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			panic(err)
 		}
@@ -73,7 +77,7 @@ func TabContent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// this should never happen, but in case no content is found...
-	res := Message{"No tab content was found with the id " + id}
+	res := MessageResponse{"No tab content was found with the id " + id}
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		panic(err)
 	}
@@ -83,7 +87,7 @@ func Reset(w http.ResponseWriter, r *http.Request) {
 	clearDb()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	res := Message{"Reset successful"}
+	res := MessageResponse{"Reset successful"}
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		panic(err)
 	}
