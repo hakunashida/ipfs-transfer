@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	fmt.Println("Karibu :)")
+	fmt.Println("Ushirikina")
 
 	connectDb()
 	// beginFetching()
