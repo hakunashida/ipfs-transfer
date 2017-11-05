@@ -71,9 +71,9 @@ func clearDb() {
 	Collection.RemoveAll(nil)
 }
 
-func searchDb(terms string) []TabReference {
+func searchDb(terms string) TabReferences {
 
-	var tabReferences []TabReference
+	var tabReferences TabReferences
 	query := bson.M{"$text": bson.M{"$search": terms}}
 	err := Collection.Find(query).All(&tabReferences)
 	if err != nil {
