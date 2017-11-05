@@ -6,7 +6,7 @@ go install
 
 run
 ```bash
-cd ipfs-transfer
+cd ushirikina
 go build
 go run *.go
 ```
