@@ -37,10 +37,10 @@ var routes = Routes{
 		TabContent,
 	},
 
-	// TODO: this route should of course be removed before pushing to production
+	// TODO: this route should of course be removed before pushing to production!
 	Route{
 		"Reset",
-		"GET",
+		"POST",
 		"/reset",
 		Reset,
 	},
