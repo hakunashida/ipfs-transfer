@@ -70,6 +70,19 @@ func getTabById(id string) TabReference {
 	return data
 }
 
+func getTabByArtistAndName(artist string, name string) (TabReference, bool) {
+	data := TabReference{}
+	err := Collection.Find(bson.M{
+		"artist": bson.RegEx{Pattern: `^` + artist + `$`, Options: "i"},
+		"name":   bson.RegEx{Pattern: `^` + name + `$`, Options: "i"}}).
+		One(&data)
+	foundOne := true
+	if err != nil {
+		foundOne = false
+	}
+	return data, foundOne
+}
+
 func clearDb() {
 	Collection.RemoveAll(nil)
 }

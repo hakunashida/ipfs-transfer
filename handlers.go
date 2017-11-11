@@ -13,6 +13,10 @@ type MessageResponse struct {
 	Body string `json:"message"`
 }
 
+type TabResponse struct {
+	Data TabReference `json:"tab"`
+}
+
 type TabsResponse struct {
 	Data []TabReference `json:"tabs"`
 }
@@ -46,6 +50,26 @@ func TabsSearch(w http.ResponseWriter, r *http.Request) {
 		tabs = searchResults
 	}
 	res := TabsResponse{Data: tabs}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		panic(err)
+	}
+}
+
+func TabGet(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	artist := vars["artist"]
+	name := vars["name"]
+	tab, foundOne := getTabByArtistAndName(artist, name)
+
+	res := TabResponse{Data: tab}
+	if !foundOne {
+		// TODO: send empty json back
+	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)

@@ -31,6 +31,12 @@ var routes = Routes{
 		TabsSearch,
 	},
 	Route{
+		"TabGet",
+		"GET",
+		"/tabs/artist/{artist}/name/{name}",
+		TabGet,
+	},
+	Route{
 		"TabContent",
 		"GET",
 		"/tabs/{id}/content",
