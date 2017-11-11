@@ -36,7 +36,7 @@ func beginFetching() {
 
 	flag.Parse()
 
-	fmt.Println("2. Begin fetching")
+	fmt.Println("Begin fetching")
 
 	// Parse the string defined in the configuration
 	parsedUrl, err := url.Parse(*seed)

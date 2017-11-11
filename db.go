@@ -28,16 +28,19 @@ func connectDb() {
 		panic(err)
 	}
 
-	fmt.Println("1. Database connection opened")
+	fmt.Println("Database connection opened")
 
 	session.SetMode(mgo.Monotonic, true)
 	Database = session.DB(dbName)
 	Collection = Database.C(collectionName)
 
-	// clearDb()
-
 	// set up search indexes
-	err = Collection.EnsureIndexKey("name", "artist")
+	index := mgo.Index{
+		Key:        []string{"name", "artist"},
+		Background: true,
+	}
+	err = Collection.EnsureIndex(index)
+
 	if err != nil {
 		panic(err)
 	}
@@ -73,9 +76,18 @@ func clearDb() {
 
 func searchDb(terms string) TabReferences {
 
+	// Some thoughts on (fuzzy) search:
+	// https://stackoverflow.com/questions/27977575/mongodb-approximate-string-matching
+
 	var tabReferences TabReferences
 	query := bson.M{"$text": bson.M{"$search": terms}}
-	err := Collection.Find(query).All(&tabReferences)
+	err := Collection.
+		Find(query).
+		Select(bson.M{"score": bson.M{"$meta": "textScore"}}).
+		Limit(50).
+		Sort("$textScore:score").
+		All(&tabReferences)
+
 	if err != nil {
 		panic(err)
 	}
