@@ -1,3 +1,7 @@
+pre-reqs
+* go
+* mongodb
+
 install
 ```bash
 go get github.com/hakunashida/ushirikina
@@ -7,8 +11,7 @@ go install
 run
 ```bash
 cd ushirikina
-go build
-PORT=8000 go run *.go
+mongod & PORT=8000 go run *.go
 ```
 
 visit
