@@ -1,6 +1,6 @@
 install
 ```bash
-go get
+go get github.com/hakunashida/ushirikina
 go install
 ```
 
