@@ -1,0 +1,3 @@
+- fix tabs/search endpoint (mongo search is failing)
+- collect page views and rating when scraping tabs
+- scrape from other sources other than u-g

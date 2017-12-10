@@ -14,7 +14,7 @@ func main() {
 	fmt.Println("Ushirikina")
 
 	connectDb()
-	// beginFetching()
+	beginFetching()
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
