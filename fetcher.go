@@ -24,7 +24,7 @@ var (
 	dup = map[string]bool{}
 
 	// Command-line flags
-	seed        = flag.String("seed", "https://ultimate-guitar.com", "seed URL")
+	seed        = flag.String("seed", "http://www.guitaretab.com/", "seed URL")
 	cancelAfter = flag.Duration("cancelafter", 0, "automatically cancel the fetchbot after a given time")
 	cancelAtURL = flag.String("cancelat", "", "automatically cancel the fetchbot at a given URL")
 	stopAfter   = flag.Duration("stopafter", 0, "automatically stop the fetchbot after a given time")
@@ -128,7 +128,6 @@ func beginFetching() {
 	if err != nil {
 		fmt.Printf("[ERR] GET %s - %s\n", *seed, err)
 	}
-	// q.Block()
 }
 
 func runMemStats(f *fetchbot.Fetcher, tick time.Duration) {
@@ -199,7 +198,7 @@ func enqueueLinks(ctx *fetchbot.Context, doc *goquery.Document) {
 		}
 
 		// Only follow links that pass the regex test
-		re := regexp.MustCompile(`(\.com\/)+([a-z]?|(0-9)?|bands|tabs|tab)\/`)
+		re := regexp.MustCompile(`(www\.guitaretab\.com)`)
 		if re.FindStringIndex(parsedUrl.String()) == nil {
 			return
 		}

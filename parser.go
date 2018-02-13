@@ -9,10 +9,9 @@ import (
 
 func parseTabPage(doc *goquery.Document) {
 
-	// ultimate-guitar
 	tabContent := doc.Find("pre.js-tab-content").Text()
-	title := doc.Find(".t_title h1").Text()
-	artist := doc.Find(".t_title .t_autor a").Text()
+	title := doc.Find(".gt-tab--song").Text()
+	artist := doc.Find(".gt-tab--band").Text()
 	url := doc.Url.String()
 
 	if tabContent != "" {

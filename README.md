@@ -5,7 +5,6 @@ pre-reqs
 install
 ```bash
 go get github.com/hakunashida/ushirikina
-go install
 ```
 
 run
