@@ -36,7 +36,7 @@ func connectDb() {
 
 	// set up search indexes
 	index := mgo.Index{
-		Key:        []string{"name", "artist"},
+		Key:        []string{"$text:name", "$text:artist"},
 		Background: true,
 	}
 	err = Collection.EnsureIndex(index)
