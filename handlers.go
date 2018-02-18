@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -26,7 +25,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func TabsShow(w http.ResponseWriter, r *http.Request) {
 	tabs := getAllTabs()
-	w.Header().Set("Content-Type", "application.json; charset=UTF-8")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	res := TabsResponse{tabs}
 	if err := json.NewEncoder(w).Encode(res); err != nil {
@@ -35,8 +34,6 @@ func TabsShow(w http.ResponseWriter, r *http.Request) {
 }
 
 func TabsSearch(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Print("hi")
 
 	// TODO: should use a querystring to perform RESTful searches
 	// https://stackoverflow.com/questions/207477/restful-url-design-for-search

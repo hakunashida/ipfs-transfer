@@ -6,26 +6,92 @@
 <body>
 	<h1>Ushirikina</h1>
 	<h2>api</h2>
-	<a href="/tabs">/tabs</a>
 
-	<!-- <form action="/tabs/search/"> -->
-	<form id="search" onsubmit="searchTabs()">
-		<input type="text" name="search"></input>
-		<input type="submit" value="search"></input>
-	</form>
+	<hr>
 
-	<h2>Danger zone</h2>
-	<p>This will empty the database! Forever!</p>
-	<a href="/reset">/reset</a>
+	<div class="route">
+		<p><a href="/tabs">/tabs</a></p>
+		<p><i>Retrieves the full collection of tabs</i></p>
+	</div>
+
+	<hr>
+
+	<div class="route">
+		<p>
+			<form id="search" onsubmit="searchTabs(event)">
+				<span>/tabs/search/
+					<input type="text" name="search"></input>
+				</span>
+				<input type="submit" value="go"></input>
+			</form>
+		</p>
+		<p><i>Searches for a tab, returning a list of possibilities</i></p>
+	</div>
+
+	<hr>
+
+	<div class="route">
+		<p>
+			<form id="artist" onsubmit="getByArtistAndName(event)">
+				<span>
+					/tabs/artist/
+					<input type="text" name="artist"></input>
+					/name/
+					<input type="text" name="name"></input>
+				</span>
+				<input type="submit" value="go"></input>
+			</form>
+		</p>
+		<p><i>Gets a tab by artist and tab name</i></p>
+	</div>
+
+	<hr>
+
+	<div class="route">
+		<p>
+			<form id="content" onsubmit="getTabContent(event)">
+				<span>
+					/tabs/
+					<input type="text" name="id"></input>
+					/content
+				</span>
+				<input type="submit" value="go"></input>
+			</form>
+		</p>
+		<p><i>Gets a tab's content by id</i></p>
+	</div>
+
+	<hr>
+
+	<div class="route">
+		<p><a href="/reset">/reset</a></p>
+		<p><i>DANGER: This will empty the database! Forever!</i></p>
+	</div>
+
+	<hr>
 
 	<script>
-		function searchTabs() {
-			console.log("HI!");
+		function searchTabs(event) {
 			var actionSrc = "/tabs/search/" + document.getElementsByName("search")[0].value;
-			console.log(actionSrc);
 			var form = document.getElementById("search");
 			form.action = actionSrc;
-			console.log(form.action);
+		}
+
+		function getByArtistAndName(event) {
+
+			var actionSrc = "/tabs/artist/"
+				+ document.getElementsByName("artist")[0].value
+				+ "/name/"
+				+ document.getElementsByName("name")[0].value;
+
+			var form = document.getElementById("artist");
+			form.action = actionSrc;
+		}
+
+		function getTabContent(event) {
+			var actionSrc = "/tabs/" + document.getElementsByName("id")[0].value + "/content";
+			var form = document.getElementById("content");
+			form.action = actionSrc;
 		}
 	</script>
 </body>
