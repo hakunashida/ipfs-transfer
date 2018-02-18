@@ -13,8 +13,14 @@ func main() {
 
 	fmt.Println("Ushirikina")
 
+	args := os.Args[1:]
+	fmt.Println(args)
+
 	connectDb()
-	beginFetching()
+
+	if contains(args, "crawl") || contains(args, "C") {
+		beginFetching()
+	}
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
@@ -30,4 +36,13 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(originsOk, headersOk, methodsOk)(router)))
 
 	defer disconnectDb()
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if (a == e) {
+			return true;
+		}
+	}
+	return false;
 }

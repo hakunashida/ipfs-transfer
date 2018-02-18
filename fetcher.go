@@ -24,6 +24,10 @@ var (
 	dup = map[string]bool{}
 
 	// Command-line flags
+	// https://www.ukulele-tabs.com/uke-songs/0.html
+	// http://www.chordie.com/browsesong.php
+	// https://www.azchords.com/a.html
+	// https://ukutabs.com/artist/0-9/
 	seed        = flag.String("seed", "http://www.guitaretab.com/", "seed URL")
 	cancelAfter = flag.Duration("cancelafter", 0, "automatically cancel the fetchbot after a given time")
 	cancelAtURL = flag.String("cancelat", "", "automatically cancel the fetchbot at a given URL")

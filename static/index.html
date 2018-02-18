@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ushirikina</title>
+</head>
+<body>
+	<h1>Ushirikina</h1>
+	<h2>api</h2>
+	<a href="/tabs">/tabs</a>
+
+	<!-- <form action="/tabs/search/"> -->
+	<form id="search" onsubmit="searchTabs()">
+		<input type="text" name="search"></input>
+		<input type="submit" value="search"></input>
+	</form>
+
+	<h2>Danger zone</h2>
+	<p>This will empty the database! Forever!</p>
+	<a href="/reset">/reset</a>
+
+	<script>
+		function searchTabs() {
+			console.log("HI!");
+			var actionSrc = "/tabs/search/" + document.getElementsByName("search")[0].value;
+			console.log(actionSrc);
+			var form = document.getElementById("search");
+			form.action = actionSrc;
+			console.log(form.action);
+		}
+	</script>
+</body>
+</html>

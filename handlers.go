@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -22,7 +21,7 @@ type TabsResponse struct {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	http.ServeFile(w, r, "static/index.html")
 }
 
 func TabsShow(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +35,8 @@ func TabsShow(w http.ResponseWriter, r *http.Request) {
 }
 
 func TabsSearch(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Print("hi")
 
 	// TODO: should use a querystring to perform RESTful searches
 	// https://stackoverflow.com/questions/207477/restful-url-design-for-search
