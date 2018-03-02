@@ -14,16 +14,17 @@ func main() {
 	fmt.Println("Ushirikina")
 
 	args := os.Args[1:]
+	env := os.Getenv("GO_ENV")
 
 	connectDb()
 
-	if contains(args, "crawl") || contains(args, "C") {
+	if env == "production" || contains(args, "crawl") || contains(args, "C") {
 		beginFetching()
 	}
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "DELETE", "PUT", "OPTIONS"})
 
 	router := NewRouter()
 

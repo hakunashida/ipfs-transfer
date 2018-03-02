@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -10,7 +11,6 @@ import (
 )
 
 const (
-	dialStr        = "localhost:27017"
 	dbName         = "tabs"
 	collectionName = "references"
 )
@@ -23,7 +23,7 @@ var (
 
 func connectDb() {
 
-	session, err := mgo.Dial("localhost:27017")
+	session, err := mgo.Dial(os.Getenv("MONGO_URL"))
 	if err != nil {
 		panic(err)
 	}

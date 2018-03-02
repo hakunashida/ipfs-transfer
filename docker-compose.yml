@@ -1,0 +1,21 @@
+version: "3.5"
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URL: "db:27017"
+      GO_ENV: "production"
+    links:
+      - db
+
+  db:
+    image: mongo:3.6.2
+    ports:
+      - "27017:27017"
+    volumes:
+      - .:/data/db
